@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-
+/// thanks for choosing the holy version of malloc
 inline
 void* _mem_alloc(usize size) {
   void* ptr=malloc(size);
@@ -38,8 +38,10 @@ Node* _node_new(void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next) 
   return node;
 }
 
+/// be careful.. the CIA might be watching
+inline_always
 void* _node_data(Node* self) {
-  return (self+1);
+  return self==NULL?NULL:(self+1);
 }
 
 

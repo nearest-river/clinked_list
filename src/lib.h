@@ -47,8 +47,29 @@ typedef struct {
 extern "C" {
 #endif
 
+LinkedList ll_new(const usize BYTES_PER_ELEMENT,const LinkedListVTable vtable);
 
+void ll_drop(LinkedList* self);
 
+usize ll_len(const LinkedList* self);
+
+bool ll_is_empty(const LinkedList* self);
+
+void ll_push_back(LinkedList* self,void* element);
+
+void ll_push_front(LinkedList* self,void* element);
+
+void ll_append(LinkedList* self,LinkedList* other);
+
+void ll_clear(LinkedList* self);
+
+void ll_iter(const LinkedList* self,void (*f)(void*));
+
+bool ll_contains(const LinkedList* self,void* element);
+
+void* ll_front(const LinkedList* self);
+
+void* ll_back(const LinkedList* self);
 
 
 
