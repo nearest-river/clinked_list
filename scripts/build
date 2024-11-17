@@ -1,0 +1,18 @@
+#!/bin/sh
+
+LIB_NAME=clinked-list
+
+ensure_dir() {
+  if [ ! -d $1 ]; then
+    mkdir $1
+  fi
+}
+
+ensure_dir "include";
+ensure_dir "bin";
+
+cd include;
+gcc -Wall -g -c ../src/*.c;
+ar -rc "./lib$LIB_NAME.a" *.o
+rm -f *.o
+
