@@ -75,15 +75,12 @@ void ll_append(Self* self,Self* other) {
 
 void ll_clear(Self* self) {
   Self ll={
-    .len=self->len,
-    .tail=self->tail,
-    .head=self->head,
+    .len=(usize)_mem_take((void**)&self->len),
+    .tail=_mem_take((void**)&self->tail),
+    .head=_mem_take((void**)&self->head),
     .vtable=self->vtable,
     .BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT
   };
-  self->head=NULL;
-  self->tail=NULL;
-  self->len=0;
   return ll_drop(&ll);
 }
 
