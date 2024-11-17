@@ -1,0 +1,3 @@
+[submodule "include/cprimitives"]
+	path = include/cprimitives
+	url = https://github.com/nearest-river/cprimitives.git
