@@ -2,11 +2,10 @@
 #define CLINKED_LIST_H
 #include "prelude.h"
 
-
+/** LinkedList Node. (data isn't directly added to prevent indirection.) */
 typedef struct Node {
-  void* data;
-  struct Node* next;
   struct Node* prev;
+  struct Node* next;
 } Node;
 
 /**
@@ -19,7 +18,11 @@ typedef void (*Destructor)(void*);
  * 
  * * Params: `(void* dest,void* src)`.
  */
-typedef void (*Cloner)(void*,void*);
+typedef void (*Cloner)(const void*,const void*);
+
+
+typedef int (*ComparisonFn)(const void*,const void*);
+
 
 /**
  * This virtual table keeping track of the resources held by the `LinkedList`.
@@ -27,6 +30,7 @@ typedef void (*Cloner)(void*,void*);
 typedef struct {
   const Destructor destructor;
   const Cloner cloner;
+  const ComparisonFn compare;
 } LinkedListVTable;
 
 typedef struct {
