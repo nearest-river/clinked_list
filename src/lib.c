@@ -22,10 +22,12 @@ void ll_drop(Self* self) {
   panic("todo");
 }
 
+inline_always
 usize ll_len(const Self* self) {
   return self->len;
 }
 
+inline_always
 bool ll_is_empty(const Self* self) {
   return self->len==0;
 }
@@ -41,6 +43,7 @@ void* ll_node_into_element(const Node* self,const usize BYTES_PER_ELEMENT) {
   return realloc(element,BYTES_PER_ELEMENT);
 }
 
+inline
 void ll_push_back(Self* self,void* element) {
   Node* node=_node_new(element,self->BYTES_PER_ELEMENT,self->tail,NULL);
 
@@ -53,6 +56,7 @@ void ll_push_back(Self* self,void* element) {
   self->len++;
 }
 
+inline
 void ll_push_front(Self* self,void* element) {
   Node* node=_node_new(element,self->BYTES_PER_ELEMENT,self->head,NULL);
 
@@ -84,6 +88,7 @@ void ll_append(Self* self,Self* other) {
   other->len=0;
 }
 
+inline
 void ll_clear(Self* self) {
   Self ll={
     .len=(usize)_mem_take((void**)&self->len),
@@ -126,6 +131,7 @@ void* ll_back(const Self* self) {
   return ll_node_element(self->tail,self->BYTES_PER_ELEMENT);
 }
 
+inline
 Node* ll_pop_front_node(Self* self) {
   if(self->head==NULL) return NULL;
   Node* node=self->head;
@@ -141,6 +147,7 @@ Node* ll_pop_front_node(Self* self) {
   return node;
 }
 
+inline
 Node* ll_pop_back_node(Self* self) {
   if(self->tail==NULL) return NULL;
   Node* node=self->tail;
@@ -156,10 +163,12 @@ Node* ll_pop_back_node(Self* self) {
   return node;
 }
 
+inline
 void* ll_pop_back(Self* self) {
   return ll_node_into_element(ll_pop_back_node(self),self->BYTES_PER_ELEMENT);
 }
 
+inline
 void* ll_pop_front(Self* self) {
   return ll_node_into_element(ll_pop_front_node(self),self->BYTES_PER_ELEMENT);
 }
