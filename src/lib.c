@@ -31,8 +31,14 @@ bool ll_is_empty(const Self* self) {
 }
 
 inline_always
-void* ll_node_data(Node* self,const usize BYTES_PER_ELEMENT) {
+void* ll_node_element(const Node* self,const usize BYTES_PER_ELEMENT) {
   return self==NULL?NULL:((void*)self)-BYTES_PER_ELEMENT;
+}
+
+inline_always
+void* ll_node_into_element(const Node* self,const usize BYTES_PER_ELEMENT) {
+  void* element=ll_node_element(self,BYTES_PER_ELEMENT);
+  return realloc(element,BYTES_PER_ELEMENT);
 }
 
 void ll_push_back(Self* self,void* element) {
@@ -92,7 +98,7 @@ void ll_clear(Self* self) {
 void ll_iter(const Self* self,void (*f)(void*)) {
   Node* current=self->head;
   while(current!=NULL) {
-    f(ll_node_data(current,self->BYTES_PER_ELEMENT));
+    f(ll_node_element(current,self->BYTES_PER_ELEMENT));
     current=current->next;
   }
 }
@@ -101,7 +107,7 @@ bool ll_contains(const Self* self,void* element) {
   Node* current=self->head;
   const ComparisonFn compare=self->vtable.compare;
   while(current!=NULL) {
-    if(compare(element,ll_node_data(current,self->BYTES_PER_ELEMENT))==0) {
+    if(compare(element,ll_node_element(current,self->BYTES_PER_ELEMENT))==0) {
       return true;
     }
     current=current->next;
@@ -112,12 +118,12 @@ bool ll_contains(const Self* self,void* element) {
 
 inline
 void* ll_front(const Self* self) {
-  return ll_node_data(self->head,self->BYTES_PER_ELEMENT);
+  return ll_node_element(self->head,self->BYTES_PER_ELEMENT);
 }
 
 inline
 void* ll_back(const Self* self) {
-  return ll_node_data(self->tail,self->BYTES_PER_ELEMENT);
+  return ll_node_element(self->tail,self->BYTES_PER_ELEMENT);
 }
 
 Node* ll_pop_front_node(Self* self) {
@@ -151,11 +157,11 @@ Node* ll_pop_back_node(Self* self) {
 }
 
 void* ll_pop_back(Self* self) {
-  return ll_node_data(ll_pop_back_node(self),self->BYTES_PER_ELEMENT);
+  return ll_node_into_element(ll_pop_back_node(self),self->BYTES_PER_ELEMENT);
 }
 
 void* ll_pop_front(Self* self) {
-  return ll_node_data(ll_pop_front_node(self),self->BYTES_PER_ELEMENT);
+  return ll_node_into_element(ll_pop_front_node(self),self->BYTES_PER_ELEMENT);
 }
 
 
