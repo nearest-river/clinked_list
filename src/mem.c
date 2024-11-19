@@ -27,23 +27,17 @@ void _ll_drop_in_place(void* ptr,Destructor destructor) {
 inline
 Node* _node_new(void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next) {
   const usize size=sizeof(Node)+BYTES_PER_ELEMENT;
-  Node* node=(struct Node*)_mem_alloc(MIN_NON_ZERO_CAP(size));
+  void* data_ptr=_mem_alloc(MIN_NON_ZERO_CAP(size));
+  Node* node=(Node*)(data_ptr+BYTES_PER_ELEMENT);
 
   // the data is actually stored after the node's memory as c doesn't support generics.
   // this should be a secret between us.. the CIA is always looking for it.
-  memmove((void*)(node+1),data,BYTES_PER_ELEMENT);
+  memmove(data_ptr,data,BYTES_PER_ELEMENT);
 
   node->next=next;
   node->prev=prev;
   return node;
 }
-
-/// be careful.. the CIA might be watching
-inline_always
-void* _node_data(Node* self) {
-  return self==NULL?NULL:(self+1);
-}
-
 
 inline_always
 void _mem_swap(LinkedList* self,LinkedList* other) {

@@ -30,6 +30,11 @@ bool ll_is_empty(const Self* self) {
   return self->len==0;
 }
 
+inline_always
+void* ll_node_data(Node* self,const usize BYTES_PER_ELEMENT) {
+  return self==NULL?NULL:((void*)self)-BYTES_PER_ELEMENT;
+}
+
 void ll_push_back(Self* self,void* element) {
   Node* node=_node_new(element,self->BYTES_PER_ELEMENT,self->tail,NULL);
 
@@ -87,7 +92,7 @@ void ll_clear(Self* self) {
 void ll_iter(const Self* self,void (*f)(void*)) {
   Node* current=self->head;
   while(current!=NULL) {
-    f(_node_data(current));
+    f(ll_node_data(current,self->BYTES_PER_ELEMENT));
     current=current->next;
   }
 }
@@ -96,7 +101,7 @@ bool ll_contains(const Self* self,void* element) {
   Node* current=self->head;
   const ComparisonFn compare=self->vtable.compare;
   while(current!=NULL) {
-    if(compare(element,_node_data(current))==0) {
+    if(compare(element,ll_node_data(current,self->BYTES_PER_ELEMENT))==0) {
       return true;
     }
     current=current->next;
@@ -107,13 +112,63 @@ bool ll_contains(const Self* self,void* element) {
 
 inline
 void* ll_front(const Self* self) {
-  return _node_data(self->head);
+  return ll_node_data(self->head,self->BYTES_PER_ELEMENT);
 }
 
 inline
 void* ll_back(const Self* self) {
-  return _node_data(self->tail);
+  return ll_node_data(self->tail,self->BYTES_PER_ELEMENT);
 }
+
+Node* ll_pop_front_node(Self* self) {
+  if(self->head==NULL) return NULL;
+  Node* node=self->head;
+  self->head=node->next;
+
+  if(self->head==NULL) {
+    self->tail=NULL;
+  } else {
+    self->head->prev=NULL;
+  }
+
+  self->len--;
+  return node;
+}
+
+Node* ll_pop_back_node(Self* self) {
+  if(self->tail==NULL) return NULL;
+  Node* node=self->tail;
+  self->tail=node->prev;
+
+  if(self->tail==NULL) {
+    self->head=NULL;
+  } else {
+    self->tail->next=NULL;
+  }
+
+  self->len--;
+  return node;
+}
+
+void* ll_pop_back(Self* self) {
+  return ll_node_data(ll_pop_back_node(self),self->BYTES_PER_ELEMENT);
+}
+
+void* ll_pop_front(Self* self) {
+  return ll_node_data(ll_pop_front_node(self),self->BYTES_PER_ELEMENT);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
