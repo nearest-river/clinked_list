@@ -1,13 +1,4 @@
-#ifndef CLINKED_LIST_MEM_H
-#define CLINKED_LIST_MEM_H
-#include "lib.h"
-#include "prelude.h"
-#include <string.h>
-
-
-#ifdef _cplusplus 
-extern "C" {
-#endif
+#include "mem.h"
 
 /// thanks for choosing the holy version of malloc
 inline
@@ -80,11 +71,3 @@ void _ll_unlink_node(LinkedList* self,Node* node) {
 
 
 
-
-
-
-#ifdef _cplusplus
-}
-#endif
-
-#endif

@@ -1,5 +1,5 @@
 #include "lib.h"
-#include "mem.c"
+#include "mem.h"
 #include "prelude.h"
 
 typedef LinkedList Self;

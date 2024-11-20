@@ -28,9 +28,9 @@ typedef int (*ComparisonFn)(const void*,const void*);
  * This virtual table keeping track of the resources held by the `LinkedList`.
  */
 typedef struct {
-  const Destructor destructor;
-  const Clone clone;
-  const ComparisonFn compare;
+  Destructor destructor;
+  Clone clone;
+  ComparisonFn compare;
 } LinkedListVTable;
 
 typedef struct {

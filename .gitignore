@@ -3,3 +3,4 @@ rusty/
 bin/
 
 *.lock
+*.a
