@@ -55,10 +55,6 @@ usize ll_len(const LinkedList* self);
 
 bool ll_is_empty(const LinkedList* self);
 
-void* ll_node_element(const Node* self,const usize BYTES_PER_ELEMENT);
-
-void* ll_node_into_element(const Node* self,const usize BYTES_PER_ELEMENT);
-
 void ll_push_back(LinkedList* self,void* element);
 
 void ll_push_front(LinkedList* self,void* element);
@@ -82,6 +78,22 @@ Node* ll_pop_back_node(LinkedList* self);
 void* ll_pop_back(LinkedList* self);
 
 void* ll_pop_front(LinkedList* self);
+
+void* ll_remove(LinkedList* self,usize idx);
+
+void ll_insert(LinkedList* self,usize idx,void* element);
+
+
+//////////
+// Node //
+//////////
+
+void* ll_node_element(const Node* self,const usize BYTES_PER_ELEMENT);
+
+void* ll_node_into_element(const Node* self,const usize BYTES_PER_ELEMENT);
+
+
+
 
 
 #ifdef _cplusplus

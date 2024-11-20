@@ -30,7 +30,7 @@ Node* _node_new(void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next) 
   void* data_ptr=_mem_alloc(MIN_NON_ZERO_CAP(size));
   Node* node=(Node*)(data_ptr+BYTES_PER_ELEMENT);
 
-  // the data is actually stored after the node's memory as c doesn't support generics.
+  // the data is actually stored before the node's memory as c doesn't support generics.
   // this should be a secret between us.. the CIA is always looking for it.
   memmove(data_ptr,data,BYTES_PER_ELEMENT);
 
@@ -59,7 +59,22 @@ void* _mem_take(void** self) {
   return ptr;
 }
 
+inline
+void _ll_unlink_node(LinkedList* self,Node* node) {
+  if(node->prev!=NULL) {
+    node->prev->next=node->next;
+  } else {
+    self->head=node->next;
+  }
 
+  if(node->next!=NULL) {
+    node->next->prev=node->prev;
+  } else {
+    self->tail=node->prev;
+  }
+
+  self->len--;
+}
 
 
 

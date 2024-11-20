@@ -173,11 +173,61 @@ void* ll_pop_front(Self* self) {
   return ll_node_into_element(ll_pop_front_node(self),self->BYTES_PER_ELEMENT);
 }
 
+void* ll_remove(Self* self,usize idx) {
+  usize len=self->len;
+  if(idx>=len) return NULL;
 
+  usize offset_from_end=len-idx-1;
+  Node* cursor;
+  if(idx<=offset_from_end) {
+    cursor=self->head;
+    usize n=idx;
+    while(n--) {
+      cursor=cursor->next;
+    }
+  } else {
+    cursor=self->tail;
+    usize n=offset_from_end;
+    while(n--) {
+      cursor=cursor->prev;
+    }
+  }
 
+  _ll_unlink_node(self,cursor);
+  return ll_node_into_element(cursor,self->BYTES_PER_ELEMENT);
+}
 
+void ll_insert(Self* self,usize idx,void* element) {
+  usize len=self->len;
+  assert(idx<len);
 
+  usize offset_from_end=len-idx;
+  Node* cursor;
+  if(idx<=offset_from_end) {
+    cursor=self->head;
+    usize n=idx-1;
+    while(n--) {
+      cursor=cursor->next;
+    }
+  } else {
+    cursor=self->tail;
+    usize n=offset_from_end;
+    while(n--) {
+      cursor=cursor->prev;
+    }
+  }
 
+  Node* node=_node_new(element,self->BYTES_PER_ELEMENT,cursor,cursor->next);
+  if(cursor->next!=NULL) {
+    cursor->next->prev=node;
+  }
+
+  if(cursor->prev!=NULL) {
+    cursor->prev->next=node;
+  }
+
+  self->len++;
+}
 
 
 
