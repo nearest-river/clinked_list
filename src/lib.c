@@ -229,7 +229,52 @@ void ll_insert(Self* self,usize idx,void* element) {
   self->len++;
 }
 
+Self ll_split_off(Self* self,usize at) {
+  if(self->vtable.clone==NULL) {
+    panic("`self` doesn't implement `Clone`.");
+  }
+  usize len=self->len;
+  assert(at<=len);
 
+
+  LinkedList new_list=ll_new(self->BYTES_PER_ELEMENT,self->vtable);
+  if(at==0) {
+    new_list.len=(usize)_mem_take((void**)&self->len);
+    new_list.head=_mem_take((void**)&self->head);
+    new_list.tail=_mem_take((void**)&self->tail);
+    goto ret;
+  } else if(at==len) {
+    goto ret;
+  }
+
+  Node* cursor;
+  usize delta=len-at;
+  if(at<=delta) {
+    cursor=self->head;
+    usize n=at-1;
+    while(n--) {
+      cursor=cursor->next;
+    }
+  } else {
+    cursor=self->tail;
+    usize n=delta;
+    while(n--) {
+      cursor=cursor->prev;
+    }
+  }
+
+  new_list.head=_mem_take((void**)&cursor->next);
+  new_list.tail=self->tail;
+  new_list.len=delta;
+  if(new_list.head!=NULL) {
+    new_list.head->prev=NULL;
+  }
+
+  self->tail=cursor;
+  self->len-=delta;
+ret:
+  return new_list;
+}
 
 
 

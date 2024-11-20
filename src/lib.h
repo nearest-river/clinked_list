@@ -18,7 +18,7 @@ typedef void (*Destructor)(void*);
  * 
  * * Params: `(void* dest,void* src)`.
  */
-typedef void (*Cloner)(const void*,const void*);
+typedef void (*Clone)(const void*,const void*);
 
 
 typedef int (*ComparisonFn)(const void*,const void*);
@@ -29,7 +29,7 @@ typedef int (*ComparisonFn)(const void*,const void*);
  */
 typedef struct {
   const Destructor destructor;
-  const Cloner cloner;
+  const Clone clone;
   const ComparisonFn compare;
 } LinkedListVTable;
 
@@ -82,6 +82,9 @@ void* ll_pop_front(LinkedList* self);
 void* ll_remove(LinkedList* self,usize idx);
 
 void ll_insert(LinkedList* self,usize idx,void* element);
+
+LinkedList ll_split_off(LinkedList* self,usize at);
+
 
 
 //////////
