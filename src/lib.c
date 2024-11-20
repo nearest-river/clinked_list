@@ -19,7 +19,21 @@ Self ll_new(const usize BYTES_PER_ELEMENT,const LinkedListVTable vtable) {
 }
 
 void ll_drop(Self* self) {
-  panic("todo");
+  const Destructor drop=self->vtable.destructor;
+  const usize len=self->len;
+  Node* cursor=self->tail;
+
+  for(usize i=0;i<len;i++) {
+    void* binding=ll_node_element(cursor,self->BYTES_PER_ELEMENT);
+    cursor=cursor->prev;
+
+    if(drop!=NULL) drop(binding);
+    free(binding);
+  }
+
+  self->head=NULL;
+  self->tail=NULL;
+  self->len=0;
 }
 
 inline_always

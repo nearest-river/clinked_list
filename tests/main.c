@@ -20,18 +20,13 @@ int main(int argc,const char** argv) {
     ll_push_back(&ll,&i);
   }
 
+  printf("before drop:\n");
   ll_print(&ll);
 
-  ll_remove(&ll,ll.len-1);
-  ll_insert(&ll,0,&argc);
+  ll_drop(&ll);
 
-  LinkedList ll2=ll_split_off(&ll,2);
-
-  printf("ll: ");
+  printf("after drop:\n");
   ll_print(&ll);
-
-  printf("ll2: ");
-  ll_print(&ll2);
 
   return 0;
 }
