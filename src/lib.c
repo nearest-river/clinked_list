@@ -58,7 +58,7 @@ void ll_push_back(Self* self,void* element) {
 
 inline
 void ll_push_front(Self* self,void* element) {
-  Node* node=_node_new(element,self->BYTES_PER_ELEMENT,self->head,NULL);
+  Node* node=_node_new(element,self->BYTES_PER_ELEMENT,NULL,self->head);
 
   if(self->head==NULL) {
     self->tail=node;
@@ -84,8 +84,7 @@ void ll_append(Self* self,Self* other) {
 
   self->tail=_mem_take((void**)&other->tail);
 
-  self->len+=other->len;
-  other->len=0;
+  self->len+=(usize)_mem_take((void**)&other->len);
 }
 
 inline
@@ -100,7 +99,7 @@ void ll_clear(Self* self) {
   return ll_drop(&ll);
 }
 
-void ll_iter(const Self* self,void (*f)(void*)) {
+void ll_for_each(const Self* self,void (*f)(void*)) {
   Node* current=self->head;
   while(current!=NULL) {
     f(ll_node_element(current,self->BYTES_PER_ELEMENT));
@@ -199,7 +198,13 @@ void* ll_remove(Self* self,usize idx) {
 
 void ll_insert(Self* self,usize idx,void* element) {
   usize len=self->len;
-  assert(idx<len);
+  assert(idx<=len);
+
+  if(idx==0) {
+    return ll_push_front(self,element);
+  } else if(idx==len) {
+    return ll_push_back(self,element);
+  }
 
   usize offset_from_end=len-idx;
   Node* cursor;
@@ -221,11 +226,7 @@ void ll_insert(Self* self,usize idx,void* element) {
   if(cursor->next!=NULL) {
     cursor->next->prev=node;
   }
-
-  if(cursor->prev!=NULL) {
-    cursor->prev->next=node;
-  }
-
+  cursor->next=node;
   self->len++;
 }
 

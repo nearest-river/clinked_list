@@ -63,7 +63,7 @@ void ll_append(LinkedList* self,LinkedList* other);
 
 void ll_clear(LinkedList* self);
 
-void ll_iter(const LinkedList* self,void (*f)(void*));
+void ll_for_each(const LinkedList* self,void (*f)(void*));
 
 bool ll_contains(const LinkedList* self,void* element);
 
