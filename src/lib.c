@@ -36,6 +36,13 @@ void ll_drop(Self* self) {
   self->len=0;
 }
 
+inline
+void ll_node_drop(Node* self,Destructor drop,const usize BYTES_PER_ELEMENT) {
+  void* binding=ll_node_element(self,BYTES_PER_ELEMENT);
+  if(drop!=NULL) drop(binding);
+  free(binding);
+}
+
 inline_always
 usize ll_len(const Self* self) {
   return self->len;

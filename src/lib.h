@@ -95,7 +95,7 @@ void* ll_node_element(const Node* self,const usize BYTES_PER_ELEMENT);
 
 void* ll_node_into_element(const Node* self,const usize BYTES_PER_ELEMENT);
 
-
+void ll_node_drop(Node* self,Destructor drop,const usize BYTES_PER_ELEMENT);
 
 
 
