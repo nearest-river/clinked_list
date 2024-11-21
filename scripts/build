@@ -20,3 +20,5 @@ cd ..;
 gcc -Wall -g -c ../src/*.c;
 ar -rc "./lib$LIB_NAME.a" ./cvec/*.o *.o;
 
+rm -rf cvec;
+rm -f *.o
