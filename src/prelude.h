@@ -22,7 +22,7 @@
 #define not_null2(ptr1,ptr2) { assert(ptr1!=NULL);assert(ptr2); }
 #endif
 
-
+/// inspired by dr Jonas Birch
 #define lambda(ident,_,params,__,ret_type,c) \
   ret_type __fn_lambda##ident##__LINE__ params { return c; } \
   ret_type (*ident) params = __fn_lambda ## ident ## __LINE__ ;

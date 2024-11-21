@@ -14,12 +14,12 @@ int main(int argc,const char** argv) {
   lambda(is_odd ,=, (i32* x),->, bool ,(*x & 1));
   ll_retain(&ll,(PredicateFn)is_odd);
 
-  printf("before drop:\n");
+  printf("before drop: ");
   print_ll(&ll);
 
   ll_clear(&ll);
 
-  printf("after drop:\n");
+  printf("after clear: ");
   print_ll(&ll);
 
   return 0;
