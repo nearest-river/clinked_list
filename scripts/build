@@ -8,11 +8,15 @@ ensure_dir() {
   fi
 }
 
-ensure_dir "include";
+ensure_dir "target";
 ensure_dir "bin";
+cd target;
 
-cd include;
+ensure_dir "cvec";
+cd cvec;
+gcc -Wall -g -c ../../include/cvec/lib/*.c;
+cd ..;
+
 gcc -Wall -g -c ../src/*.c;
-ar -rc "./lib$LIB_NAME.a" *.o
-rm -f *.o
+ar -rc "./lib$LIB_NAME.a" ./cvec/*.o *.o;
 
