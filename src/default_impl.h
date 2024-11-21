@@ -2,21 +2,6 @@
 #define LL_DEFAULT_IMPL_H
 #include "prelude.h"
 
-/**
- * A function that frees the resources held by `self`.
- */
-typedef void (*Destructor)(void*);
-
-/**
- * A function that clones from `src` to `dest` without forgetting about the resources held by `self`.
- * 
- * * Params: `(void* dest,void* src)`.
- */
-typedef void (*Clone)(const void*,const void*);
-
-typedef int (*ComparisonFn)(const void*,const void*);
-
-typedef bool (*PredicateFn)(const void*);
 
 /**
  * This virtual table keeping track of the resources held by the `LinkedList`.
