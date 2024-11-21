@@ -13,7 +13,7 @@ void* _mem_alloc(usize size);
 
 void _ll_drop_in_place(void* ptr,Destructor destructor);
 
-Node* _node_new(void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next);
+Node* _node_new(const void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next);
 
 void _mem_swap(LinkedList* self,LinkedList* other);
 

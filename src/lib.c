@@ -1,6 +1,7 @@
 #include "lib.h"
 #include "mem.h"
-#include "prelude.h"
+#include <string.h>
+
 
 typedef LinkedList Self;
 
@@ -339,8 +340,48 @@ void ll_retain(Self* self,PredicateFn f) {
   }
 }
 
+Vec ll_into_vec(Self self) {
+  VecVTable vtable={
+    // SAFETY: removing the destructor from self to prevent `drop`
+    .destructor=_mem_take((void**)&self.vtable.destructor),
+    .cloner=self.vtable.clone
+  };
+  Vec vec=vec_with_capacity(self.len,self.BYTES_PER_ELEMENT,vtable);
 
+  Node* src_cursor=self.head;
+  void* dest_cursor=vec.ptr;
+  for(usize i=0;i<self.len;i++) {
+    void* element=ll_node_element(src_cursor,self.BYTES_PER_ELEMENT);
+    memmove(dest_cursor,element,self.BYTES_PER_ELEMENT);
 
+    dest_cursor+=self.BYTES_PER_ELEMENT;
+    src_cursor=src_cursor->next;
+  }
+
+  vec.len=self.len;
+  ll_drop(&self);
+  return vec;
+}
+
+Vec ll_to_vec(Self* self) {
+  VecVTable vtable={
+    .destructor=self->vtable.destructor,
+    .cloner=self->vtable.clone
+  };
+  Vec vec=vec_with_capacity(self->len,self->BYTES_PER_ELEMENT,vtable);
+
+  Node* src_cursor=self->head;
+  void* dest_cursor=vec.ptr;
+  for(usize i=0;i<self->len;i++) {
+    void* element=ll_node_element(src_cursor,self->BYTES_PER_ELEMENT);
+    self->vtable.clone(dest_cursor,element);
+
+    dest_cursor+=self->BYTES_PER_ELEMENT;
+    src_cursor=src_cursor->next;
+  }
+
+  return vec;
+}
 
 
 

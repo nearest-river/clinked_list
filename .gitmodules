@@ -1,3 +1,6 @@
 [submodule "include/cstd-def"]
 	path = include/cstd-def
 	url = https://github.com/nearest-river/cstd-def
+[submodule "include/cvec"]
+	path = include/cvec
+	url = https://github.com/nearest-river/cvec.git

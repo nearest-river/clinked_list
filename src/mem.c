@@ -10,7 +10,7 @@ void* _mem_alloc(usize size) {
 }
 
 inline
-Node* _node_new(void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next) {
+Node* _node_new(const void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next) {
   const usize size=sizeof(Node)+BYTES_PER_ELEMENT;
   void* data_ptr=_mem_alloc(MIN_NON_ZERO_CAP(size));
   Node* node=(Node*)(data_ptr+BYTES_PER_ELEMENT);
