@@ -3,4 +3,4 @@
 	url = https://github.com/nearest-river/cstd-def
 [submodule "include/cvec"]
 	path = include/cvec
-	url = https://github.com/nearest-river/cvec.git
+	url = https://github.com/nearest-river/cvec
