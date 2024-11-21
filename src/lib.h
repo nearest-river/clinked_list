@@ -25,15 +25,23 @@ extern "C" {
 
 LinkedList ll_new(const usize BYTES_PER_ELEMENT,const LinkedListVTable vtable);
 
+LinkedList ll_from_vec(Vec vec);
+
+LinkedList ll_from_arr(const void* arr,const usize BYTES_PER_ELEMENT,const usize len,const LinkedListVTable vtable);
+
+LinkedList ll_clone_from_vec(Vec* vec);
+
+LinkedList ll_clone_from_slice(void* arr,const usize BYTES_PER_ELEMENT,const usize len,const LinkedListVTable vtable);
+
 void ll_drop(LinkedList* self);
 
 usize ll_len(const LinkedList* self);
 
 bool ll_is_empty(const LinkedList* self);
 
-void ll_push_back(LinkedList* self,void* element);
+void ll_push_back(LinkedList* self,const void* element);
 
-void ll_push_front(LinkedList* self,void* element);
+void ll_push_front(LinkedList* self,const void* element);
 
 void ll_append(LinkedList* self,LinkedList* other);
 

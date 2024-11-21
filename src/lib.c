@@ -1,4 +1,5 @@
 #include "lib.h"
+#include "default_impl.h"
 #include "mem.h"
 #include <string.h>
 
@@ -15,6 +16,57 @@ Self ll_new(const usize BYTES_PER_ELEMENT,const LinkedListVTable vtable) {
     .head=NULL,
     .tail=NULL
   };
+
+  return self;
+}
+
+inline
+Self ll_from_vec(Vec vec) {
+  const LinkedListVTable vtable={
+    // SAFETY: removing the destructor from `vec` to prevent `drop`
+    .destructor=_mem_take((void**)&vec.vtable.destructor),
+    .clone=vec.vtable.cloner,
+    .compare=NULL // todo
+  };
+
+  Self self=ll_from_arr(vec.ptr,vec.BYTES_PER_ELEMENT,vec.len,vtable);
+  drop_vec(&vec);
+
+  return self;
+}
+
+Self ll_from_arr(const void* arr,const usize BYTES_PER_ELEMENT,const usize len,const LinkedListVTable vtable) {
+  Self self=ll_new(BYTES_PER_ELEMENT,vtable);
+
+  for(usize i=0;i<len;i++) {
+    ll_push_back(&self,arr);
+    arr+=BYTES_PER_ELEMENT;
+  }
+
+  return self;
+}
+
+inline
+Self ll_clone_from_vec(Vec* vec) {
+  LinkedListVTable vtable={
+    .destructor=vec->vtable.destructor,
+    .clone=vec->vtable.cloner,
+    .compare=NULL,
+  };
+
+  return ll_clone_from_slice(vec->ptr,vec->BYTES_PER_ELEMENT,vec->len,vtable);
+}
+
+Self ll_clone_from_slice(void* arr,const usize BYTES_PER_ELEMENT,const usize len,const LinkedListVTable vtable) {
+  Self self=ll_new(BYTES_PER_ELEMENT,vtable);
+
+  for(usize i=0;i<len;i++) {
+    ll_push_back(&self,arr);
+    void* element=ll_node_element(self.tail,self.BYTES_PER_ELEMENT);
+    vtable.clone(element,(void*)arr);
+
+    arr+=BYTES_PER_ELEMENT;
+  }
 
   return self;
 }
@@ -70,7 +122,7 @@ void* ll_node_into_element(const Node* self,const usize BYTES_PER_ELEMENT) {
 }
 
 inline
-void ll_push_back(Self* self,void* element) {
+void ll_push_back(Self* self,const void* element) {
   not_null2(self,element);
   Node* node=_node_new(element,self->BYTES_PER_ELEMENT,self->tail,NULL);
 
@@ -84,7 +136,7 @@ void ll_push_back(Self* self,void* element) {
 }
 
 inline
-void ll_push_front(Self* self,void* element) {
+void ll_push_front(Self* self,const void* element) {
   not_null2(self,element);
   Node* node=_node_new(element,self->BYTES_PER_ELEMENT,NULL,self->head);
 
