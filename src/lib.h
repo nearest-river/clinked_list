@@ -1,38 +1,13 @@
 #ifndef CLINKED_LIST_H
 #define CLINKED_LIST_H
 #include "prelude.h"
+#include "default_impl.h"
 
 /** LinkedList Node. (data isn't directly added to prevent indirection.) */
 typedef struct Node {
   struct Node* prev;
   struct Node* next;
 } Node;
-
-/**
- * A function that frees the resources held by `self`.
- */
-typedef void (*Destructor)(void*);
-
-/**
- * A function that clones from `src` to `dest` without forgetting about the resources held by `self`.
- * 
- * * Params: `(void* dest,void* src)`.
- */
-typedef void (*Clone)(const void*,const void*);
-
-
-typedef int (*ComparisonFn)(const void*,const void*);
-
-typedef bool (*PredicateFn)(const void*);
-
-/**
- * This virtual table keeping track of the resources held by the `LinkedList`.
- */
-typedef struct {
-  Destructor destructor;
-  Clone clone;
-  ComparisonFn compare;
-} LinkedListVTable;
 
 typedef struct {
   Node* head;
