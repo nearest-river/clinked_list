@@ -23,6 +23,7 @@ typedef void (*Clone)(const void*,const void*);
 
 typedef int (*ComparisonFn)(const void*,const void*);
 
+typedef bool (*PredicateFn)(const void*);
 
 /**
  * This virtual table keeping track of the resources held by the `LinkedList`.
@@ -85,6 +86,7 @@ void ll_insert(LinkedList* self,usize idx,void* element);
 
 LinkedList ll_split_off(LinkedList* self,usize at);
 
+void ll_retain(LinkedList* self,PredicateFn f); 
 
 
 //////////

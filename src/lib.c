@@ -1,6 +1,7 @@
 #include "lib.h"
 #include "mem.h"
 #include "prelude.h"
+#include <stdio.h>
 
 typedef LinkedList Self;
 
@@ -19,16 +20,13 @@ Self ll_new(const usize BYTES_PER_ELEMENT,const LinkedListVTable vtable) {
 }
 
 void ll_drop(Self* self) {
-  const Destructor drop=self->vtable.destructor;
   const usize len=self->len;
   Node* cursor=self->tail;
 
   for(usize i=0;i<len;i++) {
-    void* binding=ll_node_element(cursor,self->BYTES_PER_ELEMENT);
+    Node* binding=cursor;
     cursor=cursor->prev;
-
-    if(drop!=NULL) drop(binding);
-    free(binding);
+    ll_node_drop(binding,self->vtable.destructor,self->BYTES_PER_ELEMENT);
   }
 
   self->head=NULL;
@@ -298,8 +296,19 @@ ret:
   return new_list;
 }
 
+void ll_retain(Self* self,PredicateFn f) {
+  const usize len=self->len;
+  Node* cursor=self->head;
+  for(usize i=0;i<len;i++) {
+    Node* binding=cursor;
+    void* element=ll_node_element(binding,self->BYTES_PER_ELEMENT);
+    cursor=cursor->next;
 
-
+    if(f(element)) continue;
+    _ll_unlink_node(self,binding);
+    ll_node_drop(binding,self->vtable.destructor,self->BYTES_PER_ELEMENT);
+  }
+}
 
 
 

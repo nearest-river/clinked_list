@@ -1,6 +1,6 @@
 
 NAME=clinked-list
-CFLAGS=-Wall -g
+CFLAGS=-Wall -g -O3
 
 
 build:

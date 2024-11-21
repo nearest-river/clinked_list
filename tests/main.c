@@ -5,6 +5,7 @@ void i32_clone(i32* dest,i32* src);
 int i32_compare(const i32* self,const i32* rhs);
 void print(void* element);
 void ll_print(LinkedList* self);
+bool is_even(i32* x);
 
 static const LinkedListVTable LL_VTABLE_I32={
   .clone=(Clone)i32_clone,
@@ -19,6 +20,8 @@ int main(int argc,const char** argv) {
   for(i32 i=0;i<10;i++) {
     ll_push_back(&ll,&i);
   }
+
+  ll_retain(&ll,(PredicateFn)is_even);
 
   printf("before drop:\n");
   ll_print(&ll);
@@ -54,7 +57,10 @@ void print(void* element) {
   printf("%d ",*(i32*)element);
 }
 
-
+inline
+bool is_even(i32* x) {
+  return !(*x & 1);
+}
 
 
 
