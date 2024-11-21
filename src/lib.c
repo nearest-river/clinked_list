@@ -1,7 +1,6 @@
 #include "lib.h"
 #include "mem.h"
 #include "prelude.h"
-#include <stdio.h>
 
 typedef LinkedList Self;
 
@@ -20,6 +19,7 @@ Self ll_new(const usize BYTES_PER_ELEMENT,const LinkedListVTable vtable) {
 }
 
 void ll_drop(Self* self) {
+  if(!self) return;
   const usize len=self->len;
   Node* cursor=self->tail;
 
@@ -36,18 +36,22 @@ void ll_drop(Self* self) {
 
 inline
 void ll_node_drop(Node* self,Destructor drop,const usize BYTES_PER_ELEMENT) {
+  if(!self) return;
   void* binding=ll_node_element(self,BYTES_PER_ELEMENT);
+
   if(drop!=NULL) drop(binding);
   free(binding);
 }
 
 inline_always
 usize ll_len(const Self* self) {
+  not_null(self);
   return self->len;
 }
 
 inline_always
 bool ll_is_empty(const Self* self) {
+  not_null(self);
   return self->len==0;
 }
 
@@ -58,12 +62,15 @@ void* ll_node_element(const Node* self,const usize BYTES_PER_ELEMENT) {
 
 inline_always
 void* ll_node_into_element(const Node* self,const usize BYTES_PER_ELEMENT) {
-  void* element=ll_node_element(self,BYTES_PER_ELEMENT);
+  if(self==NULL) return NULL;
+  void* element=((void*)self)-BYTES_PER_ELEMENT;
+
   return realloc(element,BYTES_PER_ELEMENT);
 }
 
 inline
 void ll_push_back(Self* self,void* element) {
+  not_null2(self,element);
   Node* node=_node_new(element,self->BYTES_PER_ELEMENT,self->tail,NULL);
 
   if(self->tail==NULL) {
@@ -77,6 +84,7 @@ void ll_push_back(Self* self,void* element) {
 
 inline
 void ll_push_front(Self* self,void* element) {
+  not_null2(self,element);
   Node* node=_node_new(element,self->BYTES_PER_ELEMENT,NULL,self->head);
 
   if(self->head==NULL) {
@@ -90,6 +98,7 @@ void ll_push_front(Self* self,void* element) {
 }
 
 void ll_append(Self* self,Self* other) {
+  not_null2(self,other);
   if(self->tail==NULL) {
     _mem_swap(self,other);
     return;
@@ -108,6 +117,7 @@ void ll_append(Self* self,Self* other) {
 
 inline
 void ll_clear(Self* self) {
+  not_null(self);
   Self ll={
     .len=(usize)_mem_take((void**)&self->len),
     .tail=_mem_take((void**)&self->tail),
@@ -115,10 +125,14 @@ void ll_clear(Self* self) {
     .vtable=self->vtable,
     .BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT
   };
+
   return ll_drop(&ll);
 }
 
 void ll_for_each(const Self* self,void (*f)(void*)) {
+  if(f==NULL) return;
+  not_null(self);
+
   Node* current=self->head;
   while(current!=NULL) {
     f(ll_node_element(current,self->BYTES_PER_ELEMENT));
@@ -127,8 +141,10 @@ void ll_for_each(const Self* self,void (*f)(void*)) {
 }
 
 bool ll_contains(const Self* self,void* element) {
+  not_null2(self,element);
   Node* current=self->head;
   const ComparisonFn compare=self->vtable.compare;
+
   while(current!=NULL) {
     if(compare(element,ll_node_element(current,self->BYTES_PER_ELEMENT))==0) {
       return true;
@@ -141,17 +157,21 @@ bool ll_contains(const Self* self,void* element) {
 
 inline
 void* ll_front(const Self* self) {
+  not_null(self)
   return ll_node_element(self->head,self->BYTES_PER_ELEMENT);
 }
 
 inline
 void* ll_back(const Self* self) {
+  not_null(self)
   return ll_node_element(self->tail,self->BYTES_PER_ELEMENT);
 }
 
 inline
 Node* ll_pop_front_node(Self* self) {
+  not_null(self);
   if(self->head==NULL) return NULL;
+
   Node* node=self->head;
   self->head=node->next;
 
@@ -167,7 +187,9 @@ Node* ll_pop_front_node(Self* self) {
 
 inline
 Node* ll_pop_back_node(Self* self) {
+  not_null(self);
   if(self->tail==NULL) return NULL;
+
   Node* node=self->tail;
   self->tail=node->prev;
 
@@ -192,6 +214,7 @@ void* ll_pop_front(Self* self) {
 }
 
 void* ll_remove(Self* self,usize idx) {
+  not_null(self);
   usize len=self->len;
   if(idx>=len) return NULL;
 
@@ -216,6 +239,7 @@ void* ll_remove(Self* self,usize idx) {
 }
 
 void ll_insert(Self* self,usize idx,void* element) {
+  not_null2(self,element);
   usize len=self->len;
   assert(idx<=len);
 
@@ -250,14 +274,15 @@ void ll_insert(Self* self,usize idx,void* element) {
 }
 
 Self ll_split_off(Self* self,usize at) {
+  not_null(self);
   if(self->vtable.clone==NULL) {
     panic("`self` doesn't implement `Clone`.");
   }
+
   usize len=self->len;
   assert(at<=len);
-
-
   LinkedList new_list=ll_new(self->BYTES_PER_ELEMENT,self->vtable);
+
   if(at==0) {
     new_list.len=(usize)_mem_take((void**)&self->len);
     new_list.head=_mem_take((void**)&self->head);
@@ -297,8 +322,12 @@ ret:
 }
 
 void ll_retain(Self* self,PredicateFn f) {
+  not_null(self);
+  if(f==NULL) return;
+
   const usize len=self->len;
   Node* cursor=self->head;
+
   for(usize i=0;i<len;i++) {
     Node* binding=cursor;
     void* element=ll_node_element(binding,self->BYTES_PER_ELEMENT);

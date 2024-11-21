@@ -15,6 +15,13 @@
 #define panic(...) { fprintf(stderr,__VA_ARGS__);exit(1); }
 #define inline_always __inline __attribute__ ((__always_inline__))
 
+#ifndef not_null
+#define not_null(ptr) { assert(ptr!=NULL); }
+#endif
+#ifndef not_null2
+#define not_null2(ptr1,ptr2) { assert(ptr1!=NULL);assert(ptr2); }
+#endif
+
 
 
 #endif
