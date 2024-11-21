@@ -10,12 +10,6 @@ void* _mem_alloc(usize size) {
 }
 
 inline
-void _ll_drop_in_place(void* ptr,Destructor destructor) {
-  if(!destructor) return;
-  destructor(ptr);
-}
-
-inline
 Node* _node_new(void* data,const usize BYTES_PER_ELEMENT,Node* prev,Node* next) {
   const usize size=sizeof(Node)+BYTES_PER_ELEMENT;
   void* data_ptr=_mem_alloc(MIN_NON_ZERO_CAP(size));

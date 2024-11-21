@@ -1,10 +1,7 @@
 #include <stdio.h>
 #include "../src/lib.h"
 
-void print(void* element);
-void ll_print(LinkedList* self);
-bool is_even(i32* x);
-
+void print_ll(LinkedList* self);
 
 
 int main(int argc,const char** argv) {
@@ -14,35 +11,30 @@ int main(int argc,const char** argv) {
     ll_push_back(&ll,&i);
   }
 
-  ll_retain(&ll,(PredicateFn)is_even);
+  lambda(is_odd ,=, (i32* x),->, bool ,(*x & 1));
+  ll_retain(&ll,(PredicateFn)is_odd);
 
   printf("before drop:\n");
-  ll_print(&ll);
+  print_ll(&ll);
 
-  ll_drop(&ll);
+  ll_clear(&ll);
 
   printf("after drop:\n");
-  ll_print(&ll);
+  print_ll(&ll);
 
   return 0;
 }
 
-void ll_print(LinkedList* self) {
-  printf("LinkedList(%lu) {\n  ",self->len);
-  ll_for_each(self,print);
-  printf("\n}\n");
-}
-
-inline
-void print(void* element) {
+void print_as_i32(void* element) {
   printf("%d ",*(i32*)element);
 }
 
 inline
-bool is_even(i32* x) {
-  return !(*x & 1);
+void print_ll(LinkedList* self) {
+  printf("LinkedList(%lu) {\n  ",self->len);
+  ll_for_each(self,print_as_i32);
+  printf("\n}\n");
 }
-
 
 
 
