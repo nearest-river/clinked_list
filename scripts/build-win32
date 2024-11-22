@@ -1,0 +1,29 @@
+#!/bin/sh
+
+LIB_NAME=clinked-list
+
+ensure_dir() {
+  if [ ! -d $1 ]; then
+    mkdir $1
+  fi
+}
+
+if [ -d target/win32 ]; then
+  exit 0;
+fi
+
+ensure_dir "target";
+ensure_dir "target/win32";
+ensure_dir "bin";
+cd target/win32;
+
+ensure_dir "cvec";
+cd cvec;
+x86_64-w64-mingw32-gcc -Wall -g -c ../../../include/cvec/lib/*.c;
+cd ..;
+
+x86_64-w64-mingw32-gcc -Wall -g -c ../../src/*.c;
+x86_64-w64-mingw32-ar -rc "./lib$LIB_NAME.a" ./cvec/*.o *.o;
+
+rm -rf cvec;
+rm -f *.o;
