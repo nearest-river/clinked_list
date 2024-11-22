@@ -25,17 +25,17 @@ int main(int argc,const char** argv) {
   return 0;
 }
 
-void print_as_i32(void* element) {
-  printf("%d ",*(i32*)element);
-}
-
 inline
 void print_ll(LinkedList* self) {
+  void print_as_i32(void* element);
   printf("LinkedList(%lu) {\n  ",self->len);
   ll_for_each(self,print_as_i32);
   printf("\n}\n");
 }
 
+void print_as_i32(void* element) {
+  printf("%d ",*(i32*)element);
+}
 
 
 
