@@ -73,7 +73,11 @@ void ll_retain(LinkedList* self,PredicateFn f);
 
 Vec ll_into_vec(LinkedList self);
 
-Vec ll_to_vec(LinkedList* self); 
+Vec ll_to_vec(LinkedList* self);
+
+bool ll_remove_element(LinkedList* self,const void* element);
+
+
 
 
 

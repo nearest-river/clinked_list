@@ -435,6 +435,32 @@ Vec ll_to_vec(Self* self) {
   return vec;
 }
 
+bool ll_remove_element(Self* self,const void* element) {
+  not_null2(self,element);
+  if(self->vtable.compare==NULL) {
+    panic("LinkedList doesn't implement `ComparisonFn`");
+  }
+
+  Node* cursor;
+  const usize len=self->len;
+  const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
+  for(usize i=0;i<len;i++) {
+    void* elem=ll_node_element(cursor,BYTES_PER_ELEMENT);
+    if(self->vtable.compare(element,elem)==0) {
+      _ll_unlink_node(self,cursor);
+      ll_node_drop(cursor,self->vtable.destructor,BYTES_PER_ELEMENT);
+      return true;
+    }
+
+    cursor=cursor->next;
+  }
+
+  return false;
+}
+
+
+
+
 
 
 
