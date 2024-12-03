@@ -77,6 +77,9 @@ Vec ll_to_vec(LinkedList* self);
 
 bool ll_remove_element(LinkedList* self,const void* element);
 
+bool ll_insert_after(LinkedList* self,void* element,void* target);
+
+bool ll_insert_before(LinkedList* self,void* element,void* target);
 
 
 

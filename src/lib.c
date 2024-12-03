@@ -458,6 +458,61 @@ bool ll_remove_element(Self* self,const void* element) {
   return false;
 }
 
+bool ll_insert_after(Self* self,void* element,void* target) {
+  not_null2(self,element);
+  if(self->vtable.compare==NULL) {
+    panic("LinkedList doesn't implement `ComparisonFn`");
+  }
+
+  const usize len=self->len;
+  const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
+
+  Node* cursor=self->head;
+  for(usize i=0;i<len;i++,cursor=cursor->next) {
+    void* elem=ll_node_element(cursor,BYTES_PER_ELEMENT);
+    if(self->vtable.compare(target,elem)!=0) {
+      continue;
+    }
+
+    Node* node=_node_new(element,self->BYTES_PER_ELEMENT,cursor,cursor->next);
+    if(cursor->next!=NULL) {
+      cursor->next->prev=node;
+    }
+
+    cursor->next=node;
+    self->len++;
+    return true;
+  }
+
+  return false;
+}
+
+bool ll_insert_before(Self* self,void* element,void* target) {
+  not_null2(self,element);
+  if(self->vtable.compare==NULL) {
+    panic("LinkedList doesn't implement `ComparisonFn`");
+  }
+
+  const usize len=self->len;
+  const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
+  Node* cursor=self->tail;
+  for(usize i=0;i<len;i++,cursor=cursor->prev) {
+    void* elem=ll_node_element(cursor,BYTES_PER_ELEMENT);
+    if(self->vtable.compare(target,elem)!=0) {
+      continue;
+    }
+
+    Node* node=_node_new(element,self->BYTES_PER_ELEMENT,cursor->prev,cursor);
+    if(cursor->prev!=NULL) {
+      cursor->prev->next=node;
+    }
+    cursor->prev=node;
+    self->len++;
+    return true;
+  }
+
+  return false;
+}
 
 
 
