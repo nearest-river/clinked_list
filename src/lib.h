@@ -81,7 +81,11 @@ bool ll_insert_after(LinkedList* self,void* element,void* target);
 
 bool ll_insert_before(LinkedList* self,void* element,void* target);
 
+void* ll_remove_if(LinkedList* self,PredicateFn f);
 
+void* ll_remove_after(LinkedList* self,void* target);
+
+void* ll_remove_before(LinkedList* self,void* target);
 
 
 //////////
