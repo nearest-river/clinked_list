@@ -36,6 +36,7 @@ Self ll_from_vec(Vec vec) {
 }
 
 Self ll_from_arr(const void* arr,const usize BYTES_PER_ELEMENT,const usize len,const LinkedListVTable vtable) {
+  not_null(arr);
   Self self=ll_new(BYTES_PER_ELEMENT,vtable);
 
   for(usize i=0;i<len;i++) {
@@ -416,6 +417,7 @@ Vec ll_into_vec(Self self) {
 }
 
 Vec ll_to_vec(Self* self) {
+  not_null(self);
   VecVTable vtable={
     .destructor=self->vtable.destructor,
     .cloner=self->vtable.clone
@@ -513,6 +515,14 @@ bool ll_insert_before(Self* self,void* element,void* target) {
 
   return false;
 }
+
+
+
+
+
+
+
+
 
 
 
