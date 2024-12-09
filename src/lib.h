@@ -87,6 +87,8 @@ void* ll_remove_after(LinkedList* self,void* target);
 
 void* ll_remove_before(LinkedList* self,void* target);
 
+void ll_reverse(LinkedList* self);
+
 
 //////////
 // Node //

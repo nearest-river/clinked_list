@@ -588,7 +588,23 @@ void* ll_remove_before(Self* self,void* target) {
   return NULL;
 }
 
+void ll_reverse(Self* self) {
+  not_null(self);
 
+  Node* temp=NULL;
+  Node* head=self->head;
+  for(Node* cursor=head;cursor;cursor=cursor->prev) {
+    temp=cursor->prev;
+    cursor->prev=cursor->next;
+    cursor->next=temp;
+  }
+
+  if(temp) {
+    self->head=temp->prev;
+  }
+
+  self->tail=head;
+}
 
 
 
