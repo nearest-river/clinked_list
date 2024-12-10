@@ -37,6 +37,55 @@ int main(int argc,const char** argv) {
     scanf("%63[^\n]",line);
     SubCommand subcommand=parse_subcommand(line);
 
+    switch(subcommand) {
+      case HELP:
+        // ll_help()
+      break;
+      case PUSH_FRONT:
+        // ll_push_front()
+      break;
+      case PUSH_BACK:
+        // ll_push_back()
+      break;
+      case INSERT:
+        // ll_insert()
+      break;
+      case INSERT_AFTER:
+        // ll_insert_after()
+      break;
+      case INSERT_BEFORE:
+        // ll_insert_before()
+      break;
+      case POP_FRONT:
+        // ll_pop_front()
+      break;
+      case POP_BACK:
+        // ll_pop_back()
+      break;
+      case REMOVE:
+        // ll_remove()
+      break;
+      case REMOVE_ELEMENT:
+        // ll_remove_element()
+      break;
+      case REMOVE_AFTER:
+        // ll_remove_after()
+      break;
+      case REMOVE_BEFORE:
+        // ll_remove_before()
+      break;
+      case REV:
+        // ll_rev()
+      break;
+      case PRINT:
+        // ll_print()
+      break;
+      case QUIT:
+        // ll_quit()
+      break;
+      case INVALID:
+      break;
+    }
   }
 
 
