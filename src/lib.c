@@ -444,7 +444,7 @@ bool ll_remove_element(Self* self,const void* element) {
     panic("LinkedList doesn't implement `ComparisonFn`");
   }
 
-  Node* cursor;
+  Node* cursor=self->head;
   const usize len=self->len;
   const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
   for(usize i=0;i<len;i++) {
