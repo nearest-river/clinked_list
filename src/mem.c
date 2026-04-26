@@ -62,6 +62,15 @@ void _ll_unlink_node(LinkedList* self,Node* node) {
 }
 
 
+bool _mem_eq(const void* lhs,const void* rhs,const usize BYTES_PER_ELEMENT) {
+  for(usize i=0;i<BYTES_PER_ELEMENT;i++) {
+    const u8* _lhs=lhs;
+    const u8* _rhs=rhs;
+    if(_lhs[i]!=_rhs[i]) return false;
+  }
+  return true;
+}
+
 
 
 

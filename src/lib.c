@@ -1,5 +1,4 @@
 #include "lib.h"
-#include "default_impl.h"
 #include "mem.h"
 #include <string.h>
 
@@ -64,7 +63,11 @@ Self ll_clone_from_slice(void* arr,const usize BYTES_PER_ELEMENT,const usize len
   for(usize i=0;i<len;i++) {
     ll_push_back(&self,arr);
     void* element=ll_node_element(self.tail,self.BYTES_PER_ELEMENT);
-    vtable.clone(element,(void*)arr);
+    if(vtable.clone) {
+      vtable.clone(element,arr);
+    } else {
+      memcpy(element,arr,BYTES_PER_ELEMENT);
+    }
 
     arr+=BYTES_PER_ELEMENT;
   }
@@ -211,14 +214,12 @@ bool ll_contains(const Self* self,void* element) {
 
 inline
 void* ll_front(const Self* self) {
-  not_null(self)
-  return ll_node_element(self->head,self->BYTES_PER_ELEMENT);
+  return self?ll_node_element(self->head,self->BYTES_PER_ELEMENT):NULL;
 }
 
 inline
 void* ll_back(const Self* self) {
-  not_null(self)
-  return ll_node_element(self->tail,self->BYTES_PER_ELEMENT);
+  return self?ll_node_element(self->tail,self->BYTES_PER_ELEMENT):NULL;
 }
 
 inline
@@ -327,6 +328,7 @@ void ll_insert(Self* self,usize idx,void* element) {
   self->len++;
 }
 
+// just copies byte-by-byte if Clone isn't implemented
 Self ll_split_off(Self* self,usize at) {
   not_null(self);
   if(self->vtable.clone==NULL) {
@@ -428,7 +430,11 @@ Vec ll_to_vec(Self* self) {
   void* dest_cursor=vec.ptr;
   for(usize i=0;i<self->len;i++) {
     void* element=ll_node_element(src_cursor,self->BYTES_PER_ELEMENT);
-    self->vtable.clone(dest_cursor,element);
+    if(self->vtable.clone) {
+      self->vtable.clone(dest_cursor,element);
+    } else {
+      memmove(dest_cursor,element,self->BYTES_PER_ELEMENT);
+    }
 
     dest_cursor+=self->BYTES_PER_ELEMENT;
     src_cursor=src_cursor->next;
@@ -439,17 +445,18 @@ Vec ll_to_vec(Self* self) {
 
 bool ll_remove_element(Self* self,const void* element) {
   not_null2(self,element);
-  const ComparisonFn cmp=self->vtable.compare;
-  if(cmp==NULL) {
-    panic("LinkedList doesn't implement `ComparisonFn`");
-  }
 
   Node* cursor=self->head;
   const usize len=self->len;
   const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
   for(usize i=0;i<len;i++) {
     void* elem=ll_node_element(cursor,BYTES_PER_ELEMENT);
-    if(cmp(element,elem)==0) {
+    bool is_eq=self->vtable.compare?
+      self->vtable.compare(element,elem)
+    :
+      _mem_eq(element,elem,BYTES_PER_ELEMENT);
+
+    if(is_eq) {
       _ll_unlink_node(self,cursor);
       ll_node_drop(cursor,self->vtable.destructor,BYTES_PER_ELEMENT);
       return true;
@@ -463,17 +470,18 @@ bool ll_remove_element(Self* self,const void* element) {
 
 bool ll_insert_after(Self* self,void* element,void* target) {
   not_null2(self,element);
-  const ComparisonFn cmp=self->vtable.compare;
-  if(cmp==NULL) {
-    panic("LinkedList doesn't implement `ComparisonFn`");
-  }
 
   const usize len=self->len;
   const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
   Node* cursor=self->head;
   for(usize i=0;i<len;i++,cursor=cursor->next) {
     void* elem=ll_node_element(cursor,BYTES_PER_ELEMENT);
-    if(cmp(target,elem)!=0) {
+
+    bool is_eq=self->vtable.compare?
+      self->vtable.compare(element,elem)
+    :
+      _mem_eq(element,elem,BYTES_PER_ELEMENT);
+    if(is_eq) {
       continue;
     }
 
@@ -492,17 +500,18 @@ bool ll_insert_after(Self* self,void* element,void* target) {
 
 bool ll_insert_before(Self* self,void* element,void* target) {
   not_null2(self,element);
-  const ComparisonFn cmp=self->vtable.compare;
-  if(cmp==NULL) {
-    panic("LinkedList doesn't implement `ComparisonFn`");
-  }
 
   const usize len=self->len;
   const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
   Node* cursor=self->tail;
   for(usize i=0;i<len;i++,cursor=cursor->prev) {
     void* elem=ll_node_element(cursor,BYTES_PER_ELEMENT);
-    if(cmp(target,elem)!=0) {
+    bool is_eq=self->vtable.compare?
+      self->vtable.compare(element,elem)
+    :
+      _mem_eq(element,elem,BYTES_PER_ELEMENT);
+
+    if(is_eq) {
       continue;
     }
 
@@ -538,15 +547,16 @@ void* ll_remove_if(Self* self,PredicateFn f) {
 
 void* ll_remove_after(Self* self,void* target) {
   not_null2(self,target);
-  const ComparisonFn cmp=self->vtable.compare;
-  if(cmp==NULL) {
-    panic("LinkedList doesn't implement `ComparisonFn`");
-  }
 
   const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
   for(Node* cursor=self->head;cursor;cursor=cursor->next) {
     void* element=ll_node_element(cursor,BYTES_PER_ELEMENT);
-    if(cmp(element,target)!=0) {
+    bool is_eq=self->vtable.compare?
+      self->vtable.compare(element,target)
+    :
+      _mem_eq(element,target,BYTES_PER_ELEMENT);
+
+    if(is_eq) {
       continue;
     }
 
@@ -564,15 +574,16 @@ void* ll_remove_after(Self* self,void* target) {
 
 void* ll_remove_before(Self* self,void* target) {
   not_null2(self,target);
-  const ComparisonFn cmp=self->vtable.compare;
-  if(cmp==NULL) {
-    panic("LinkedList doesn't implement `ComparisonFn`");
-  }
 
   const usize BYTES_PER_ELEMENT=self->BYTES_PER_ELEMENT;
   for(Node* cursor=self->head;cursor;cursor=cursor->next) {
     void* element=ll_node_element(cursor,BYTES_PER_ELEMENT);
-    if(cmp(element,target)!=0) {
+    bool is_eq=self->vtable.compare?
+      self->vtable.compare(element,target)
+    :
+      _mem_eq(element,target,BYTES_PER_ELEMENT);
+
+    if(is_eq) {
       continue;
     }
 

@@ -1,13 +1,21 @@
 #ifndef CLINKED_LIST_H
 #define CLINKED_LIST_H
 #include "prelude.h"
-#include "default_impl.h"
 
 /** LinkedList Node. (data isn't directly added to prevent indirection.) */
 typedef struct Node {
   struct Node* prev;
   struct Node* next;
 } Node;
+
+/**
+ * This virtual table keeping track of the resources held by the `LinkedList`.
+ */
+typedef struct {
+  Destructor destructor;
+  Clone clone;
+  ComparisonFn compare;
+} LinkedListVTable;
 
 typedef struct {
   Node* head;

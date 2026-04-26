@@ -19,6 +19,8 @@ void _mem_swap(LinkedList* self,LinkedList* other);
 
 void* _mem_take(void** self);
 
+bool _mem_eq(const void* lhs,const void* rhs,const usize BYTES_PER_ELEMENT);
+
 void _ll_unlink_node(LinkedList* self,Node* node);
 
 
